@@ -9,6 +9,16 @@ import (
 
 func DoInitConfigJob(c *utils.CenterService, done func()) {
 	defer done()
+	for {
+		err := InitPush(c)
+		if err == nil {
+			break
+		}
+	}
+
+}
+
+func InitPush(c *utils.CenterService) error {
 	loop := 0
 	sok := false
 	for {
@@ -77,8 +87,10 @@ func DoInitConfigJob(c *utils.CenterService, done func()) {
 	////err, resp := configService.DeleteConfig()
 	if err != nil {
 		fmt.Println(err)
-		return
+		time.Sleep(10 * time.Second)
+		return err
 	}
+	return nil
 }
 
 func Execute(c *utils.CenterService) error {

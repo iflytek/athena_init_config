@@ -21,6 +21,7 @@ func DoInitConfigJob(c *utils.CenterService, done func()) {
 func InitPush(c *utils.CenterService) error {
 	loop := 0
 	sok := false
+	fmt.Println("waiting the config center ok...")
 	for {
 		if loop < 200 {
 			if !sok {
@@ -36,6 +37,8 @@ func InitPush(c *utils.CenterService) error {
 			}
 		}
 	}
+	fmt.Println("start pushing...")
+
 	regions := []string{
 		"test",
 	}

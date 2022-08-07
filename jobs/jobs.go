@@ -11,7 +11,9 @@ func DoInitConfigJob(c *utils.CenterService, done func()) {
 	defer done()
 	for {
 		err := InitPush(c)
-		if err == nil {
+		if err != nil {
+			time.Sleep(10 * time.Second)
+		} else {
 			break
 		}
 	}
@@ -53,25 +55,29 @@ func InitPush(c *utils.CenterService) error {
 	}
 	for _, wf := range wfs {
 		err := c.GetAndPushConfig(init_project, init_cluster, iservice, version, wf, regions)
-		if err == nil {
-			fmt.Println("webgate config init ok...", wf)
+		if err != nil {
+			return err
 		}
+		fmt.Println("webgate config init ok...", wf)
+
 	}
 
 	iservice = "mmocr"
 	cf := "aiges-remote.toml"
 	err := c.GetAndPushConfig(init_project, init_cluster, iservice, version, cf, regions)
-	if err == nil {
-		fmt.Println("mmocr config init ok...", cf)
+	if err != nil {
+		return err
 	}
+	fmt.Println("mmocr config init ok...", cf)
 
 	iservice = "loadbalance"
 	cf = "lbv2.toml"
 	version = "4.2.1"
 	err = c.GetAndPushConfig(init_project, init_cluster, iservice, version, cf, regions)
-	if err == nil {
-		fmt.Println("loadbalance config init ok...", cf)
+	if err != nil {
+		return err
 	}
+	fmt.Println("loadbalance config init ok...", cf)
 
 	iservice = "atmos"
 	version = "1.0.0"
@@ -81,8 +87,10 @@ func InitPush(c *utils.CenterService) error {
 	}
 	for _, cs := range cfs {
 		err = c.GetAndPushConfig(init_project, init_cluster, iservice, version, cs, regions)
+		if err != nil {
+			return err
+		}
 		fmt.Println("atmos config init ok...", cs)
-
 	}
 
 	// update confing
@@ -90,7 +98,6 @@ func InitPush(c *utils.CenterService) error {
 	////err, resp := configService.DeleteConfig()
 	if err != nil {
 		fmt.Println(err)
-		time.Sleep(10 * time.Second)
 		return err
 	}
 	return nil
